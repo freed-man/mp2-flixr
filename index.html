@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="roland f">
+    <meta name="description" content="Random movie picker and recommendation tool. Find movies by mood or get surprised with random picks.">
+    <link rel="icon" href="assets/images/favicon.ico">
+    <title>Flixr - Movie Picker</title>
+
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 Flixr - Stop Scrolling, Start Watching 🎬</h1>
+        
+        <!-- preferences form -->
+        <div class="preferences-form" id="preferencesForm">
+            <!-- mood selection -->
+            <div class="question">
+                <h3>What sounds good?</h3>
+                <div class="mood-buttons">
+                    <button class="mood-btn" data-mood="comedy">😂 Laugh</button>
+                    <button class="mood-btn" data-mood="mystery">🤔 Think</button>
+                    <button class="mood-btn" data-mood="drama">😢 Cry</button>
+                    <button class="mood-btn" data-mood="thriller">😱 Thrill</button>
+                    <button class="mood-btn" data-mood="feelgood">🌟 Feel Good</button>
+                </div>
+            </div>
+
+            <!-- time selection -->
+            <div class="question">
+                <h3>How much time do you have?</h3>
+                <div class="time-buttons">
+                    <button class="time-btn" data-time="90">⚡ 90 min</button>
+                    <button class="time-btn" data-time="120">🕐 2 hrs</button>
+                    <button class="time-btn" data-time="150">🍿 2.5 hrs+</button>
+                </div>
+            </div>
+
+            <!-- genre exclusion -->
+            <div class="question">
+                <h3>Any genre you're NOT in the mood for? (optional)</h3>
+                <div class="genre-exclude">
+                    <span class="genre-tag" data-genre="action">Action</span>
+                    <span class="genre-tag" data-genre="horror">Horror</span>
+                    <span class="genre-tag" data-genre="romance">Romance</span>
+                    <span class="genre-tag" data-genre="sci-fi">Sci-Fi</span>
+                    <span class="genre-tag" data-genre="drama">Drama</span>
+                    <span class="genre-tag" data-genre="comedy">Comedy</span>
+                    <span class="genre-tag" data-genre="animation">Animation</span>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="findMovieBtn">🔍 Find My Movie</button>
+                <button class="btn btn-secondary" id="surpriseBtn">🎲 Surprise Me!</button>
+            </div>
+        </div>
+
+        <!-- movie result -->
+        <div class="movie-result" id="movieResult">
+            <div class="movie-card">
+                <div class="movie-header">
+                    <img class="movie-poster" id="moviePoster" src="" alt="">
+                    <div class="movie-info">
+                        <h2 id="movieTitle"></h2>
+                        <div class="movie-meta">
+                            <span>📅 <span id="movieYear"></span></span>
+                            <span>⏱️ <span id="movieRuntime"></span></span>
+                            <span class="rating">⭐ <span id="movieRating"></span></span>
+                        </div>
+                        <div id="movieGenres"></div>
+                        <p class="plot" id="moviePlot"></p>
+                    </div>
+                </div>
+                <div class="result-actions">
+                    <button class="btn btn-primary" id="tryAgainBtn">Try Another</button>
+                    <button class="btn btn-secondary" id="resetBtn">Reset Preferences</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- loading spinner -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Finding your perfect movie...</p>
+        </div>
+
+        <!-- error message -->
+        <div class="error-message" id="errorMessage"></div>
+    </div>
+
+    <!-- contact button -->
+    <button class="contact-btn" id="contactBtn">💬 Contact</button>
+
+    <!-- contact popup -->
+    <div class="popup-overlay" id="popupOverlay">
+        <div class="popup">
+            <h3>Contact Me</h3>
+            <form id="contactForm">
+                <input type="text" name="name" placeholder="Your Name" required>
+                <input type="email" name="email" placeholder="Your Email" required>
+                <select name="type" required>
+                    <option value="">Select Type</option>
+                    <option value="feature">Feature Request</option>
+                    <option value="bug">Bug Report</option>
+                    <option value="general">General Feedback</option>
+                </select>
+                <textarea name="message" placeholder="Your message..." required></textarea>
+                <div class="popup-buttons">
+                    <button type="submit" class="send-btn">Send</button>
+                    <button type="button" class="cancel-btn" id="cancelBtn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="assets/js/movieData.js"></script>
+    <script src="assets/js/script.js"></script>
+</body>
+</html>
