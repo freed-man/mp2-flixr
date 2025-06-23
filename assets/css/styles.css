@@ -1,35 +1,28 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 body {
     font-family: Arial, sans-serif;
-    background: url('../images/background.jpeg') center/cover, #667eea;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background: url('../images/background.jpeg') center/cover;
+    margin: 0;
     padding: 20px;
+    min-height: 100vh;
 }
 
 .container {
     max-width: 650px;
-    width: 100%;
+    margin: auto;
     padding: 40px 20px;
+}
+
+h1, .movie-info > * {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 15px 20px;
+    border-radius: 10px;
 }
 
 h1 {
     text-align: center;
-    color: #1a1a1a;
+    color: #000;
     margin-bottom: 35px;
     font-size: 24px;
-    font-weight: bold;
-    background: rgba(255, 255, 255, 0.8);
-    padding: 15px 20px;
-    border-radius: 10px;
-    word-wrap: break-word;
 }
 
 .question {
@@ -38,66 +31,50 @@ h1 {
 
 .question h3 {
     margin-bottom: 15px;
-    color: #2c3e50;
+    color: #000;
     font-size: 20px;
-    font-weight: bold;
 }
 
-/* grids */
-.mood-buttons {
+/* Button layouts */
+.mood-buttons, .time-buttons, .genre-exclude {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
     gap: 10px;
+}
+
+.mood-buttons {
+    grid-template-columns: repeat(5, 1fr);
 }
 
 .time-buttons {
-    display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
 }
 
 .genre-exclude {
-    display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 8px;
 }
 
-/* buttons */
-.mood-btn, .time-btn, .genre-tag {
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    text-align: center;
-    background: white;
-}
-
-.mood-btn, .time-btn {
+/* Buttons */
+button {
     padding: 15px 8px;
     border: 2px solid #ddd;
+    border-radius: 8px;
     background: white;
+    cursor: pointer;
+    font-weight: bold;
     font-size: 14px;
-}
-
-.mood-btn:hover, .time-btn:hover,
-.mood-btn.selected, .time-btn.selected {
-    background: #3498db;
-    color: white;
-    border-color: #3498db;
 }
 
 .genre-tag {
     padding: 8px 4px;
-    border: 1px solid #ddd;
-    background: white;
     border-radius: 20px;
     font-size: 12px;
 }
 
-.genre-tag:hover, .genre-tag.excluded {
-    background: #3498db;
+.selected, .excluded {
+    background: #27ae60;
     color: white;
-    border-color: #3498db;
+    border-color: #27ae60;
 }
 
 .action-buttons, .result-actions {
@@ -109,31 +86,25 @@ h1 {
 .btn {
     flex: 1;
     padding: 15px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
     font-size: 16px;
-    font-weight: bold;
 }
 
-.btn-primary {
+.btn-primary, .send-btn {
     background: #27ae60;
-    color: white;
 }
 
 .btn-secondary {
     background: #3498db;
+}
+
+.btn-primary, .btn-secondary, .contact-btn, .send-btn, .cancel-btn {
     color: white;
+    border: none;
 }
 
-/* movie results */
-.movie-result {
+/* Movie display */
+.movie-result, .loading, .error-message, .popup-overlay {
     display: none;
-}
-
-.movie-card {
-    padding: 25px 20px;
-    margin-top: 25px;
 }
 
 .movie-header {
@@ -146,22 +117,12 @@ h1 {
     width: 220px;
     height: 330px;
     border-radius: 8px;
-    object-fit: cover;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* movie info */
-.movie-info h2, .movie-meta, #movieGenres, .plot {
-    color: #1a1a1a;
-    font-weight: bold;
-    background: rgba(255, 255, 255, 0.8);
+.movie-info > * {
     padding: 10px;
-    border-radius: 8px;
     margin-bottom: 10px;
-}
-
-.movie-info h2 {
-    font-size: 24px;
+    color: #000;
 }
 
 .movie-meta {
@@ -170,71 +131,53 @@ h1 {
     font-size: 14px;
 }
 
-.plot {
-    line-height: 1.6;
-    padding: 15px;
-}
-
-/* loading */
+/* Loading */
 .loading {
-    display: none;
     text-align: center;
     padding: 40px;
 }
 
 .spinner {
-    border: 3px solid #f3f3f3;
-    border-top: 3px solid #3498db;
+    border: 3px solid #ddd;
+    border-top-color: #3498db;
     border-radius: 50%;
     width: 40px;
     height: 40px;
     animation: spin 1s linear infinite;
-    margin: 0 auto 20px;
+    margin: auto;
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    to { transform: rotate(360deg); }
 }
 
-.loading p {
-    color: #1a1a1a;
-    font-size: 18px;
-    font-weight: bold;
-}
-
+/* Error */
 .error-message {
-    background: rgba(255, 235, 238, 0.95);
-    color: #c62828;
+    background: white;
+    color: red;
     padding: 15px;
     border-radius: 8px;
     margin-top: 20px;
-    display: none;
+    border: 2px solid red;
 }
 
-/* contact */
+/* Contact & Popup */
+.contact-btn, .cancel-btn {
+    background: #95a5a6;
+}
+
 .contact-btn {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background: #95a5a6;
-    color: white;
-    border: none;
     border-radius: 25px;
     padding: 12px 20px;
-    cursor: pointer;
-    font-size: 14px;
 }
 
 .popup-overlay {
-    display: none;
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
 }
 
 .popup {
@@ -249,23 +192,16 @@ h1 {
     max-width: 350px;
 }
 
-.popup h3 {
-    margin-bottom: 15px;
-    text-align: center;
-}
-
 .popup input, .popup textarea, .popup select {
     width: 100%;
     padding: 10px;
     margin-bottom: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
-    font-family: inherit;
 }
 
 .popup textarea {
     height: 60px;
-    resize: none;
 }
 
 .popup-buttons {
@@ -277,59 +213,26 @@ h1 {
 .popup-buttons button {
     flex: 1;
     padding: 10px;
-    border: none;
     border-radius: 5px;
-    cursor: pointer;
 }
 
-.send-btn {
-    background: #27ae60;
-    color: white;
-}
-
-.cancel-btn {
-    background: #95a5a6;
-    color: white;
-}
-
-/* mobile */
+/* Mobile */
 @media (max-width: 768px) {
-    .container {
-        padding: 25px;
-    }
-    
-    h1 {
-        font-size: 22px;
-        padding: 12px 15px;
-    }
-    
     .mood-buttons {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: 1fr 1fr;
     }
     
-    .genre-exclude {
+    .time-buttons, .genre-exclude {
         grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .time-buttons {
+        grid-template-columns: 1fr;
     }
     
     .movie-header {
         flex-direction: column;
-        text-align: center;
         align-items: center;
-    }
-
-    .movie-meta {
-        justify-content: center;
-    }
-}
-
-@media (max-width: 480px) {
-    h1 {
-        font-size: 18px;
-        padding: 10px 12px;
-    }
-    
-    .mood-buttons, .time-buttons, .genre-exclude {
-        grid-template-columns: 1fr;
     }
     
     .action-buttons, .result-actions {

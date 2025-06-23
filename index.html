@@ -7,16 +7,13 @@
     <meta name="description" content="Random movie picker and recommendation tool. Find movies by mood or get surprised with random picks.">
     <link rel="icon" href="assets/images/favicon.ico">
     <title>Flixr - Movie Picker</title>
-
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
     <div class="container">
         <h1>🎬 Flixr - Stop Scrolling, Start Watching 🎬</h1>
         
-        <!-- preferences form -->
         <div class="preferences-form" id="preferencesForm">
-            <!-- mood selection -->
             <div class="question">
                 <h3>What sounds good?</h3>
                 <div class="mood-buttons">
@@ -28,7 +25,6 @@
                 </div>
             </div>
 
-            <!-- time selection -->
             <div class="question">
                 <h3>How much time do you have?</h3>
                 <div class="time-buttons">
@@ -38,17 +34,16 @@
                 </div>
             </div>
 
-            <!-- genre exclusion -->
             <div class="question">
                 <h3>Any genre you're NOT in the mood for? (optional)</h3>
                 <div class="genre-exclude">
-                    <span class="genre-tag" data-genre="action">Action</span>
-                    <span class="genre-tag" data-genre="horror">Horror</span>
-                    <span class="genre-tag" data-genre="romance">Romance</span>
-                    <span class="genre-tag" data-genre="sci-fi">Sci-Fi</span>
-                    <span class="genre-tag" data-genre="drama">Drama</span>
-                    <span class="genre-tag" data-genre="comedy">Comedy</span>
-                    <span class="genre-tag" data-genre="animation">Animation</span>
+                    <button class="genre-tag" data-genre="action">Action</button>
+                    <button class="genre-tag" data-genre="horror">Horror</button>
+                    <button class="genre-tag" data-genre="romance">Romance</button>
+                    <button class="genre-tag" data-genre="sci-fi">Sci-Fi</button>
+                    <button class="genre-tag" data-genre="drama">Drama</button>
+                    <button class="genre-tag" data-genre="comedy">Comedy</button>
+                    <button class="genre-tag" data-genre="animation">Animation</button>
                 </div>
             </div>
 
@@ -58,7 +53,6 @@
             </div>
         </div>
 
-        <!-- movie result -->
         <div class="movie-result" id="movieResult">
             <div class="movie-card">
                 <div class="movie-header">
@@ -81,20 +75,15 @@
             </div>
         </div>
 
-        <!-- loading spinner -->
         <div class="loading" id="loading">
             <div class="spinner"></div>
-            <p>Finding your perfect movie...</p>
         </div>
 
-        <!-- error message -->
         <div class="error-message" id="errorMessage"></div>
     </div>
 
-    <!-- contact button -->
     <button class="contact-btn" id="contactBtn">💬 Contact</button>
 
-    <!-- contact popup -->
     <div class="popup-overlay" id="popupOverlay">
         <div class="popup">
             <h3>Contact Me</h3>

@@ -1,262 +1,253 @@
-// user preferences
-let preferences = {
-    mood: null,
-    maxTime: null,
-    excludedGenres: []
+// Variables to store what the user picks
+var selectedMood = '';
+var selectedTime = 0;
+var excludedGenres = [];
+var shownMovies = [];
+var wasSurprise = false;
+
+// Wait for page to load
+window.onload = function() {
+    setupAllButtons();
+    setupContactForm();
 };
 
-// movies already shown
-let alreadyShown = [];
-
-// map moods to categories
-const moods = {
-    'comedy': 'comedy',
-    'mystery': 'mystery', 
-    'drama': 'drama',
-    'thriller': 'thriller',
-    'feelgood': 'feelgood'
-};
-
-// setup when page loads
-document.addEventListener('DOMContentLoaded', function() {
-    setupMoodButtons();
-    setupTimeButtons();
-    setupGenreTags();
-    setupActionButtons();
-    setupContactPopup();
-});
-
-function setupMoodButtons() {
-    document.querySelectorAll('.mood-btn').forEach(btn => {
-        btn.onclick = function() {
-            // Clear others
-            document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
-            // Select this one
-            this.classList.add('selected');
-            preferences.mood = this.dataset.mood;
+// Set up all the buttons
+function setupAllButtons() {
+    // Mood buttons
+    var moodButtons = document.getElementsByClassName('mood-btn');
+    for (var i = 0; i < moodButtons.length; i++) {
+        moodButtons[i].onclick = function() {
+            clearSelected('mood-btn');
+            this.className = 'mood-btn selected';
+            selectedMood = this.getAttribute('data-mood');
         };
-    });
-}
+    }
 
-function setupTimeButtons() {
-    document.querySelectorAll('.time-btn').forEach(btn => {
-        btn.onclick = function() {
-            document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('selected'));
-            this.classList.add('selected');
-            preferences.maxTime = parseInt(this.dataset.time);
+    // Time buttons
+    var timeButtons = document.getElementsByClassName('time-btn');
+    for (var i = 0; i < timeButtons.length; i++) {
+        timeButtons[i].onclick = function() {
+            clearSelected('time-btn');
+            this.className = 'time-btn selected';
+            selectedTime = this.getAttribute('data-time');
         };
-    });
-}
+    }
 
-function setupGenreTags() {
-    document.querySelectorAll('.genre-tag').forEach(tag => {
-        tag.onclick = function() {
-            this.classList.toggle('excluded');
-            const genre = this.dataset.genre;
+    // Genre buttons
+    var genreButtons = document.getElementsByClassName('genre-tag');
+    for (var i = 0; i < genreButtons.length; i++) {
+        genreButtons[i].onclick = function() {
+            var genre = this.getAttribute('data-genre');
             
-            if (this.classList.contains('excluded')) {
-                if (!preferences.excludedGenres.includes(genre)) {
-                    preferences.excludedGenres.push(genre);
-                }
+            if (this.className === 'genre-tag excluded') {
+                this.className = 'genre-tag';
+                removeFromExcluded(genre);
             } else {
-                preferences.excludedGenres = preferences.excludedGenres.filter(g => g !== genre);
+                this.className = 'genre-tag excluded';
+                excludedGenres.push(genre);
             }
         };
-    });
-}
+    }
 
-function setupActionButtons() {
+    // Main buttons
     document.getElementById('findMovieBtn').onclick = findMovie;
     document.getElementById('surpriseBtn').onclick = surpriseMe;
-    document.getElementById('tryAgainBtn').onclick = tryAnotherMovie;
-    document.getElementById('resetBtn').onclick = resetEverything;
+    document.getElementById('tryAgainBtn').onclick = tryAnother;
+    document.getElementById('resetBtn').onclick = resetAll;
 }
 
+// Clear selected buttons
+function clearSelected(className) {
+    var buttons = document.getElementsByClassName(className);
+    for (var i = 0; i < buttons.length; i++) {
+        buttons[i].className = className;
+    }
+}
+
+// Remove genre from excluded list
+function removeFromExcluded(genre) {
+    var newList = [];
+    for (var i = 0; i < excludedGenres.length; i++) {
+        if (excludedGenres[i] !== genre) {
+            newList.push(excludedGenres[i]);
+        }
+    }
+    excludedGenres = newList;
+}
+
+// Find movie button clicked
 function findMovie() {
-    // Make sure they picked mood and time
-    if (!preferences.mood || !preferences.maxTime) {
-        showError('Please pick your mood and how much time you have!');
+    if (selectedMood === '' || selectedTime === 0) {
+        showMessage('Please pick your mood and time!');
         return;
     }
 
-    showLoading();
-    
-    // Add a little delay so it feels more natural
-    setTimeout(() => {
-        const movie = pickMovie();
-        
-        if (movie) {
-            showMovie(movie);
-        } else {
-            showError('Hmm, no movies match what you want. Try different options?');
-            showForm();
-        }
-    }, 800);
-}
-
-function pickMovie() {
-    // get movies for selected mood
-    const moodCategory = moods[preferences.mood];
-    const possibleMovies = movieDatabase[moodCategory];
-    
-    // filter movies
-    let goodMovies = possibleMovies.filter(movie => {
-        // check runtime
-        if (movie.runtime > preferences.maxTime) return false;
-        
-        // check excluded genres
-        for (let genre of movie.genres) {
-            if (preferences.excludedGenres.some(excluded => 
-                genre.toLowerCase().includes(excluded.toLowerCase()))) {
-                return false;
-            }
-        }
-        
-        // check if already shown
-        if (alreadyShown.includes(movie.id)) return false;
-        
-        return true;
-    });
-
-    // reset if no movies left
-    if (goodMovies.length === 0 && alreadyShown.length > 0) {
-        alreadyShown = [];
-        return pickMovie();
-    }
-    
-    if (goodMovies.length === 0) return null;
-    
-    // pick random movie
-    const randomMovie = goodMovies[Math.floor(Math.random() * goodMovies.length)];
-    alreadyShown.push(randomMovie.id);
-    
-    return randomMovie;
-}
-
-function showMovie(movie) {
-    document.getElementById('movieTitle').textContent = movie.title;
-    document.getElementById('movieYear').textContent = movie.year;
-    document.getElementById('movieRuntime').textContent = movie.runtime + ' min';
-    document.getElementById('movieRating').textContent = movie.rating;
-    document.getElementById('moviePlot').textContent = movie.plot;
-    document.getElementById('movieGenres').textContent = movie.genres.join(', ');
-    
-    const poster = document.getElementById('moviePoster');
-    poster.src = movie.poster;
-    poster.alt = movie.title + ' poster';
-    
-    // if poster fails, show placeholder
-    // poster.onerror = () => poster.src = 'https://via.placeholder.com/220x330?text=No+Poster';
-    
-    hideLoading();
-    document.getElementById('movieResult').style.display = 'block';
-}
-
-function resetEverything() {
-    // clear all selections
-    document.querySelectorAll('.mood-btn, .time-btn').forEach(btn => {
-        btn.classList.remove('selected');
-    });
-    document.querySelectorAll('.genre-tag').forEach(tag => {
-        tag.classList.remove('excluded');
-    });
-    
-    // reset data
-    preferences = { mood: null, maxTime: null, excludedGenres: [] };
-    alreadyShown = [];
-    
-    // show form
-    showForm();
-    hideError();
-}
-
-function showForm() {
-    document.getElementById('preferencesForm').style.display = 'block';
-    document.getElementById('movieResult').style.display = 'none';
-    document.getElementById('loading').style.display = 'none';
-}
-
-function showLoading() {
+    wasSurprise = false;
     document.getElementById('preferencesForm').style.display = 'none';
     document.getElementById('movieResult').style.display = 'none';
     document.getElementById('loading').style.display = 'block';
-}
-
-function hideLoading() {
-    document.getElementById('loading').style.display = 'none';
-}
-
-function showError(message) {
-    const errorEl = document.getElementById('errorMessage');
-    errorEl.textContent = message;
-    errorEl.style.display = 'block';
     
-    // hide after 7 seconds
-    setTimeout(() => errorEl.style.display = 'none', 7000);
-}
-
-function hideError() {
-    document.getElementById('errorMessage').style.display = 'none';
-}
-
-function surpriseMe() {
-    showLoading();
-    
-    // get all movies from all categories
-    const allMovies = [
-        ...movieDatabase.comedy,
-        ...movieDatabase.mystery,
-        ...movieDatabase.drama,
-        ...movieDatabase.thriller,
-        ...movieDatabase.feelgood
-    ];
-    
-    // pick a random movie
-    setTimeout(() => {
-        const randomMovie = allMovies[Math.floor(Math.random() * allMovies.length)];
-        showMovie(randomMovie);
+    setTimeout(function() {
+        var movie = getMovie();
+        if (movie) {
+            showMovieInfo(movie);
+        } else {
+            showMessage('No movies found. Try different options!');
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('preferencesForm').style.display = 'block';
+        }
     }, 800);
 }
 
-function tryAnotherMovie() {
-    // check if user has preferences set, if not do surprise me
-    if (!preferences.mood || !preferences.maxTime) {
+// Surprise me button clicked
+function surpriseMe() {
+    wasSurprise = true;
+    document.getElementById('preferencesForm').style.display = 'none';
+    document.getElementById('movieResult').style.display = 'none';
+    document.getElementById('loading').style.display = 'block';
+    
+    setTimeout(function() {
+        var randomNumber = Math.floor(Math.random() * allMovies.length);
+        showMovieInfo(allMovies[randomNumber]);
+    }, 800);
+}
+
+// Try another movie
+function tryAnother() {
+    if (wasSurprise) {
         surpriseMe();
     } else {
         findMovie();
     }
 }
 
-function setupContactPopup() {
-    const contactBtn = document.getElementById('contactBtn');
-    const popupOverlay = document.getElementById('popupOverlay');
-    const cancelBtn = document.getElementById('cancelBtn');
-    const contactForm = document.getElementById('contactForm');
+// Reset everything
+function resetAll() {
+    // Clear all buttons
+    var allButtons = document.getElementsByTagName('button');
+    for (var i = 0; i < allButtons.length; i++) {
+        allButtons[i].classList.remove('selected', 'excluded');
+    }
+    
+    // Reset variables
+    selectedMood = '';
+    selectedTime = 0;
+    excludedGenres = [];
+    shownMovies = [];
+    wasSurprise = false;
+    
+    // Show form
+    document.getElementById('movieResult').style.display = 'none';
+    document.getElementById('preferencesForm').style.display = 'block';
+}
 
-    // show popup
-    contactBtn.onclick = () => {
-        popupOverlay.style.display = 'block';
+// Get a movie based on selections
+function getMovie() {
+    var goodMovies = [];
+    
+    // Check each movie
+    for (var i = 0; i < allMovies.length; i++) {
+        var movie = allMovies[i];
+        
+        // Skip if wrong mood
+        if (movie.mood !== selectedMood) continue;
+        
+        // Skip if too long
+        if (movie.runtime > selectedTime) continue;
+        
+        // Skip if has excluded genre
+        var skipMovie = false;
+        for (var j = 0; j < excludedGenres.length; j++) {
+            if (movie.genres.includes(excludedGenres[j])) {
+                skipMovie = true;
+                break;
+            }
+        }
+        if (skipMovie) continue;
+        
+        // Skip if already shown
+        var alreadyShown = false;
+        for (var k = 0; k < shownMovies.length; k++) {
+            if (shownMovies[k] === movie.title) {
+                alreadyShown = true;
+                break;
+            }
+        }
+        if (alreadyShown) continue;
+        
+        // Movie is good!
+        goodMovies.push(movie);
+    }
+    
+    // No movies found
+    if (goodMovies.length === 0) {
+        if (shownMovies.length > 0) {
+            shownMovies = [];
+            return getMovie();
+        }
+        return null;
+    }
+    
+    // Pick random from good movies
+    var randomIndex = Math.floor(Math.random() * goodMovies.length);
+    var chosenMovie = goodMovies[randomIndex];
+    shownMovies.push(chosenMovie.title);
+    
+    return chosenMovie;
+}
+
+// Show the movie on screen
+function showMovieInfo(movie) {
+    document.getElementById('movieTitle').innerText = movie.title;
+    document.getElementById('movieYear').innerText = movie.year;
+    document.getElementById('movieRuntime').innerText = movie.runtime + ' min';
+    document.getElementById('movieRating').innerText = movie.rating;
+    document.getElementById('moviePlot').innerText = movie.plot;
+    document.getElementById('movieGenres').innerText = movie.genres;
+    document.getElementById('moviePoster').src = movie.poster;
+    
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('movieResult').style.display = 'block';
+}
+
+// Show message to user
+function showMessage(text) {
+    var messageDiv = document.getElementById('errorMessage');
+    messageDiv.innerText = text;
+    messageDiv.style.display = 'block';
+    
+    setTimeout(function() {
+        messageDiv.style.display = 'none';
+    }, 3000);
+}
+
+// Contact form
+function setupContactForm() {
+    var contactBtn = document.getElementById('contactBtn');
+    var overlay = document.getElementById('popupOverlay');
+    var cancelBtn = document.getElementById('cancelBtn');
+    var form = document.getElementById('contactForm');
+
+    contactBtn.onclick = function() {
+        overlay.style.display = 'block';
     };
 
-    // hide popup
-    cancelBtn.onclick = () => {
-        popupOverlay.style.display = 'none';
-        contactForm.reset();
+    cancelBtn.onclick = function() {
+        overlay.style.display = 'none';
+        form.reset();
     };
 
-    // hide popup when clicking outside
-    popupOverlay.onclick = (e) => {
-        if (e.target === popupOverlay) {
-            popupOverlay.style.display = 'none';
-            contactForm.reset();
+    overlay.onclick = function(e) {
+        if (e.target === overlay) {
+            overlay.style.display = 'none';
+            form.reset();
         }
     };
 
-    // handle form submission
-    contactForm.onsubmit = (e) => {
+    form.onsubmit = function(e) {
         e.preventDefault();
-        showError('Thanks for your feedback! (Demo mode - no data sent)');
-        popupOverlay.style.display = 'none';
-        contactForm.reset();
+        showMessage('Thanks for your message!');
+        overlay.style.display = 'none';
+        form.reset();
     };
 }
